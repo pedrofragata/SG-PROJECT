@@ -29,7 +29,7 @@ window.onload = function init() {
     //KEY EVENTS
 
     //keydown event
-    function onKeyDown(evt){
+    function onKeyDown(evt) {
         if (evt.keyCode == 38) {
             keyboardState.up = true
         }
@@ -58,7 +58,21 @@ function createPath() {
     var r2 = 70
     let r3 = 55
     let r4 = 65
-    
+
+    // instantiate a loader
+    var loader = new THREE.FBXLoader();
+    // load a resource
+    loader.load(
+        // resource URL
+        'models/carSingle.fbx',
+        // Function when resource is loaded
+        function (object) {
+            
+            scene.add(object);
+            object.position.z = 50
+        }
+    );
+
 
     //Draw the lines
     //lines of the track material
@@ -107,7 +121,7 @@ function createPath() {
     scene.add(path1)
     scene.add(path2);
 
-    console.log("path1 created",path2)
+    console.log("path1 created", path2)
 
     //CAR
     let geometryCar = new THREE.BoxGeometry(10, 5, 5);
@@ -117,7 +131,7 @@ function createPath() {
     cube.position.y = 1
     cube.position.z = r3
     //teta = Math.acos(THREE.Vector3.dot())
-    
+
 
     //POSITION CAR
 
@@ -203,27 +217,25 @@ function animate() {
 
     cube.position.x = points[i].x
     cube.position.z = points[i].z
-    
+
     //loop reason
-    i = (i +1) % (n+1)
-    
+    i = (i + 1) % (n + 1)
 
-    if (keyboardState.up){
 
-        vel+=1
-        i = (i + vel) % (n-vel);
-        if (vel > 6)
-        {
+    if (keyboardState.up) {
+
+        vel += 1
+        i = (i + vel) % (n - vel);
+        if (vel > 6) {
             vel = 6
         }
         console.log(vel)
     }
 
-    else{
-        vel-=1
-        i = (i +vel) % (n+vel);
-        if (vel < 1)
-        {
+    else {
+        vel -= 1
+        i = (i + vel) % (n + vel);
+        if (vel < 1) {
             vel = 1
         }
 
