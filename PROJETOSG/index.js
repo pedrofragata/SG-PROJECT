@@ -51,28 +51,27 @@ window.onload = function init() {
 function createCar() {
 
 }
+
 function createPath() {
 
-    n = 800; // number of points
+    n = 628; // number of points
     var r = 50; //radius
     var r2 = 70
     let r3 = 55
     let r4 = 65
 
-    // instantiate a loader
-    var loader = new THREE.FBXLoader();
+    var loader = new THREE.OBJLoader();
     // load a resource
-    loader.load(
+    /*loader.load(
         // resource URL
-        'models/carSingle.fbx',
+        'models/toycar.obj',
         // Function when resource is loaded
         function (object) {
             
             scene.add(object);
             object.position.z = 50
         }
-    );
-
+    );*/
 
     //Draw the lines
     //lines of the track material
@@ -84,44 +83,36 @@ function createPath() {
         color: 0xFF0000
     })
 
+  
     //track gemoetries
-    let geometry = new THREE.Geometry();
-    for (let i = 0; i < n + 1; i++) {
-        geometry.vertices.push(new THREE.Vector3((r + (r / 5) * Math.sin(8 * i * Math.PI / n)) * Math.sin(2 * i * Math.PI / n), 0, (r + (r / 20) * Math.sin(8 * i * Math.PI / n)) * Math.cos(2 * i * Math.PI / n)));
+    /*
+    x	=	asint	
+y	=	asintcost.
+
+http://mathworld.wolfram.com/EightCurve.html
+    */
+    let A = 80;
+    let geometry3 = new THREE.Geometry();
+    for (let i = 0; i < 2 * Math.PI; i += 0.01) {
+        geometry3.vertices.push(new THREE.Vector3(
+            A * Math.sin(i), 0,
+            A * Math.sin(i) * Math.cos(i)));
     }
 
-    let geometry2 = new THREE.Geometry()
-    for (let i = 0; i < n + 1; i++) {
-        geometry2.vertices.push(new THREE.Vector3((r2 + (r2 / 5) * Math.sin(8 * i * Math.PI / n)) * Math.sin(2 * i * Math.PI / n), 0, (r2 + (r2 / 20) * Math.sin(8 * i * Math.PI / n)) * Math.cos(2 * i * Math.PI / n)));
+    let geometryPath3 = new THREE.Geometry()
+
+    for(let i = 0; i<2*Math.PI;i+=0.01){
+        points.push(new THREE.Vector3(
+            A * Math.sin(i), 0,
+            A * Math.sin(i) * Math.cos(i)))
     }
 
-    //paths geometries*
-    let geometryPath1 = new THREE.Geometry();
-    for (let i = 0; i < n + 1; i++) {
-        points.push(new THREE.Vector3((r3 + (r3 / 5) * Math.sin(8 * i * Math.PI / n)) * Math.sin(2 * i * Math.PI / n), 0, (r3 + (r3 / 20) * Math.sin(8 * i * Math.PI / n)) * Math.cos(2 * i * Math.PI / n)))
-        geometry.vertices.push(new THREE.Vector3((r3 + (r3 / 5) * Math.sin(8 * i * Math.PI / n)) * Math.sin(2 * i * Math.PI / n), 0, (r3 + (r3 / 20) * Math.sin(8 * i * Math.PI / n)) * Math.cos(2 * i * Math.PI / n)));
-    }
-
-    let geometryPath2 = new THREE.Geometry()
-    for (let i = 0; i < n + 1; i++) {
-        geometry2.vertices.push(new THREE.Vector3((r4 + (r4 / 5) * Math.sin(8 * i * Math.PI / n)) * Math.sin(2 * i * Math.PI / n), 0, (r4 + (r4 / 20) * Math.sin(8 * i * Math.PI / n)) * Math.cos(2 * i * Math.PI / n)));
-    }
+   
 
 
+    let line3 = new THREE.Line(geometry3, material);
+    scene.add(line3)
 
-    //create lines
-    let line2 = new THREE.Line(geometry2, material)
-    let line = new THREE.Line(geometry, material);
-    scene.add(line2)
-    scene.add(line);
-
-    //create Paths
-    let path1 = new THREE.Line(geometryPath1, materialPath)
-    let path2 = new THREE.Line(geometryPath2, materialPath);
-    scene.add(path1)
-    scene.add(path2);
-
-    console.log("path1 created", path2)
 
     //CAR
     let geometryCar = new THREE.BoxGeometry(10, 5, 5);
@@ -130,10 +121,16 @@ function createPath() {
     scene.add(cube);
     cube.position.y = 1
     cube.position.z = r3
+
+    //car2
+
+    
     //teta = Math.acos(THREE.Vector3.dot())
 
 
     //POSITION CAR
+
+
 
 
 }
@@ -148,13 +145,15 @@ function createScene() {
     var aspect = window.innerWidth / window.innerHeight;
     camera = new THREE.PerspectiveCamera(100, aspect, 0.1, 200);
     // position the camera
+    
 
     camera.position.z = 120;
     camera.position.y = 60;
 
     // CONTROLS
-    //controls = new THREE.OrbitControls(camera);
-    //controls.addEventListener('change', function () { renderer.render(scene, camera); });
+    
+    controls = new THREE.OrbitControls(camera);
+    controls.addEventListener('change', function () { renderer.render(scene, camera); });
 
 
     // create a render and set the size
@@ -213,6 +212,9 @@ function createLights() {
 
 
 function animate() {
+    if(i==628){
+        i=0
+    }
     // render
 
     cube.position.x = points[i].x
@@ -241,10 +243,10 @@ function animate() {
 
 
     }
-
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
 }
+
 
 
 
