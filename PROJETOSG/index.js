@@ -3,6 +3,15 @@ var scene, renderer, camera, dirLightHelper, controls;
 var windowWidth, windowHeight;
 var mouseX = 0,
   mouseY = 0;
+var path;
+var geometry;
+var mesh;
+var angle = 0;
+var position = 0;
+// direction vector for movement
+var direction = new THREE.Vector3(1, 0, 0);
+var up = new THREE.Vector3(0, 1, 0);
+var axis = new THREE.Vector3();
 var views = [
   {
     left: 0,
@@ -75,8 +84,6 @@ window.onload = function init() {
   }
   document.addEventListener("keyup", onKeyUp, false);
 
-  // start a loop that will update the objects' positions
-  // and render the scene on each frame
   animate();
 };
 
@@ -127,8 +134,6 @@ http://mathworld.wolfram.com/EightCurve.html
     );
   }
 
-  let geometryPath3 = new THREE.Geometry();
-
   for (let i = 0; i < 2 * Math.PI; i += 0.01) {
     points.push(
       new THREE.Vector3(A * Math.sin(i), 0, A * Math.sin(i) * Math.cos(i))
@@ -151,6 +156,22 @@ http://mathworld.wolfram.com/EightCurve.html
   //teta = Math.acos(THREE.Vector3.dot())
 
   //POSITION CAR
+}
+function drawPath() {
+  var vertices = path.getSpacedPoints(20);
+
+  // Change 2D points to 3D points
+  for (var i = 0; i < vertices.length; i++) {
+    point = vertices[i];
+    vertices[i] = new THREE.Vector3(point.x, 0, point.y);
+  }
+  var lineGeometry = new THREE.Geometry();
+  lineGeometry.vertices = vertices;
+  var lineMaterial = new THREE.LineBasicMaterial({
+    color: 0xffffff
+  });
+  var line = new THREE.Line(lineGeometry, lineMaterial);
+  scene.add(line);
 }
 
 //INIT THREE JS, SCREEN, SCENE, CAMERA AND MOUSE EVENTS
@@ -180,8 +201,10 @@ function createScene() {
 
   // CONTROLS
 
-  // controls = new THREE.OrbitControls(camera);
-  //controls.addEventListener('change', function () { renderer.render(scene, camera); });
+  controls = new THREE.OrbitControls(camera);
+  controls.addEventListener("change", function() {
+    renderer.render(scene, camera);
+  });
 
   // create a render and set the size
   renderer = new THREE.WebGLRenderer();
@@ -207,9 +230,61 @@ function createScene() {
   let f1 = new THREE.Mesh(floor, floorMaterial);
   f1.rotation.x = -Math.PI / 2;
   scene.add(f1);
-  createPath();
+  // material
+  var material = new THREE.MeshPhongMaterial({
+    color: 0xff0000,
+    shading: THREE.FlatShading
+  });
+
+  // geometry
+  geometry = new THREE.BoxGeometry(10, 10, 10);
+  // mesh
+  mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
+
+  // the path
+  path = new THREE.Path();
+  var arcRadius = 50;
+  let A = 80;
+
+  for (let i = 0; i < 2 * Math.PI; i += 0.01) {
+    path.lineTo(A * Math.sin(i), A * Math.sin(i) * Math.cos(i));
+  }
+
+  // start a loop that will update the objects' positions
+  // and render the scene on each frame
+  drawPath();
+
+  // Start angle and point
+  previousAngle = getAngle(position);
+  previousPoint = path.getPointAt(position);
 }
 
+function move() {
+  // add up to position for movement
+  position += 0.001;
+
+  // get the point at position
+  var point = path.getPointAt(position);
+  mesh.position.x = point.x;
+  mesh.position.z = point.y;
+  var angle = getAngle(position);
+  // set the quaternion
+  mesh.quaternion.setFromAxisAngle(up, angle);
+
+  previousPoint = point;
+  previousAngle = angle;
+}
+
+function getAngle(position) {
+  // get the 2Dtangent to the curve
+  var tangent = path.getTangent(position).normalize();
+
+  // change tangent to 3D
+  angle = -Math.atan(tangent.x / tangent.y);
+
+  return -angle;
+}
 /* function handleWindowResize() {
   // update height and width of the renderer and the camera
   var HEIGHT = window.innerHeight;
@@ -266,7 +341,7 @@ function createLights() {
 }
 
 function animate() {
-  if (i == 628) {
+  /*  if (i == 628) {
     i = 0;
   }
   // render
@@ -290,7 +365,8 @@ function animate() {
     if (vel < 1) {
       vel = 1;
     }
-  }
+  } */
+  move();
   render();
   requestAnimationFrame(animate);
 }
