@@ -65,7 +65,7 @@ window.onload = function init() {
   // add the lights
   createLights();
   // add the objects
-  createCar();
+  //createCar();
   //createPath();
 
   //KEY EVENTS
@@ -87,76 +87,6 @@ window.onload = function init() {
   animate();
 };
 
-function createCar() {}
-
-function createPath() {
-  n = 628; // number of points
-  var r = 50; //radius
-  var r2 = 70;
-  let r3 = 55;
-  let r4 = 65;
-
-  var loader = new THREE.OBJLoader();
-  // load a resource
-  /*loader.load(
-        // resource URL
-        'models/toycar.obj',
-        // Function when resource is loaded
-        function (object) {
-            
-            scene.add(object);
-            object.position.z = 50
-        }
-    );*/
-
-  //Draw the lines
-  //lines of the track material
-  let material = new THREE.LineBasicMaterial({
-    color: 0x000000
-  });
-  //lines of the cars'path material
-  let materialPath = new THREE.LineBasicMaterial({
-    color: 0xff0000
-  });
-
-  //track gemoetries
-  /*
-    x	=	asint	
-y	=	asintcost.
-
-http://mathworld.wolfram.com/EightCurve.html
-    */
-  let A = 80;
-  let geometry3 = new THREE.Geometry();
-  for (let i = 0; i < 2 * Math.PI; i += 0.01) {
-    geometry3.vertices.push(
-      new THREE.Vector3(A * Math.sin(i), 0, A * Math.sin(i) * Math.cos(i))
-    );
-  }
-
-  for (let i = 0; i < 2 * Math.PI; i += 0.01) {
-    points.push(
-      new THREE.Vector3(A * Math.sin(i), 0, A * Math.sin(i) * Math.cos(i))
-    );
-  }
-
-  let line3 = new THREE.Line(geometry3, material);
-  scene.add(line3);
-
-  //CAR
-  let geometryCar = new THREE.BoxGeometry(10, 5, 5);
-  let materialCar = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-  cube = new THREE.Mesh(geometryCar, materialCar);
-  scene.add(cube);
-  cube.position.y = 1;
-  cube.position.z = r3;
-
-  //car2
-
-  //teta = Math.acos(THREE.Vector3.dot())
-
-  //POSITION CAR
-}
 function drawPath() {
   var vertices = path.getSpacedPoints(20);
 
