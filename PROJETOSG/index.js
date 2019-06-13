@@ -261,11 +261,21 @@ function createScene() {
 }
 
 function move() {
-  // add up to position for movement
   position += 0.001;
 
+  if (keyboardState.up) {
+    position += 0.001;
+  } else {
+    position -= 0.001;
+  }
+  if (position >= 1) {
+    position = 0.001;
+  }
   // get the point at position
   var point = path.getPointAt(position);
+  console.log(point);
+  console.log(position);
+
   mesh.position.x = point.x;
   mesh.position.z = point.y;
   var angle = getAngle(position);
