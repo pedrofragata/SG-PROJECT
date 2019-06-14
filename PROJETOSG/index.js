@@ -12,6 +12,7 @@ var position = 0;
 var direction = new THREE.Vector3(1, 0, 0);
 var up = new THREE.Vector3(0, 1, 0);
 var axis = new THREE.Vector3();
+var acc = 0
 var views = [
   {
     left: 0,
@@ -22,7 +23,7 @@ var views = [
     eye: [0, 300, 1800],
     up: [0, 1, 0],
     fov: 30,
-    updateCamera: function(camera, scene, mouseX) {
+    updateCamera: function (camera, scene, mouseX) {
       camera.position.x += mouseX * 0.05;
       camera.position.x = Math.max(Math.min(camera.position.x, 2000), -2000);
       camera.lookAt(scene.position);
@@ -37,7 +38,7 @@ var views = [
     eye: [0, 300, 1800],
     up: [0, 1, 0],
     fov: 30,
-    updateCamera: function(camera, scene, mouseX) {
+    updateCamera: function (camera, scene, mouseX) {
       camera.position.x += mouseX * 0.05;
       camera.position.x = Math.max(Math.min(camera.position.x, 2000), -2000);
       camera.lookAt(scene.position);
@@ -132,7 +133,7 @@ function createScene() {
   // CONTROLS
 
   controls = new THREE.OrbitControls(camera);
-  controls.addEventListener("change", function() {
+  controls.addEventListener("change", function () {
     renderer.render(scene, camera);
   });
 
@@ -189,31 +190,88 @@ function createScene() {
   previousAngle = getAngle(position);
   previousPoint = path.getPointAt(position);
 }
-
+let derail = false
+let derailPos;
+var angle;
+let dir;
 function move() {
-  position += 0.001;
+  position += acc;
 
   if (keyboardState.up) {
-    position += 0.001;
+    acc += 0.0001;
   } else {
-    position -= 0.001;
+    acc -= 0.0001;
   }
+  if (acc < 0.0001) {
+    acc = 0.0001;
+
+  }
+
+  if (acc >= 0.02) {//Maxima aceleração
+    acc = 0.019;
+  }
+
   if (position >= 1) {
     position = 0.001;
   }
-  // get the point at position
-  var point = path.getPointAt(position);
-  console.log(point);
-  console.log(position);
+  //Crashing when position is between 0.09 and 0.39 or 0.59 and 0.89
+  if (acc > 0.019) {
+    if (position > 0.152400000000001 && position < 0.3347999999999924) { //1ª curva
+      derail = true
+      derailPos = position
+    } else if (position > 0.6388999999999956 && position < 0.8412999999999415) {
+      derail = true
+      derailPos = position
+    }
+  }
+  if (!derail) {
+    // get the point at position
+    var point = path.getPointAt(position);
+    //console.log(position, "POSITION");
 
-  mesh.position.x = point.x;
-  mesh.position.z = point.y;
-  var angle = getAngle(position);
-  // set the quaternion
-  mesh.quaternion.setFromAxisAngle(up, angle);
+    mesh.position.x = point.x;
+    mesh.position.z = point.y;
+    angle = getAngle(position);
+    // set the quaternion
+    mesh.quaternion.setFromAxisAngle(up, angle);
 
-  previousPoint = point;
-  previousAngle = angle;
+    previousPoint = point;
+    previousAngle = angle;
+  } else {
+    // get the point at position
+    var point = path.getPointAt(derailPos);
+
+
+    // mesh.position.x = point.x;
+    // mesh.position.z = point.y;
+    //var angle = getAngle(derailPos);
+    // // set the quaternion
+    // mesh.quaternion.setFromAxisAngle(up, angle);
+
+
+
+    previousPoint = point;
+    previousAngle = angle;
+
+    // console.log("DESCARRILOU", point, angle, Math.cos(angle), Math.sin(angle));
+
+    // mesh.position.x += 2 * Math.cos(angle);
+    // mesh.position.z += 2 * Math.sin(angle);
+
+    if (dir == undefined) {
+      var normalMatrix = new THREE.Matrix4().extractRotation(mesh.matrixWorld);
+      var normal = mesh.geometry.faces[10].normal;
+      dir = normal.clone().applyMatrix4(normalMatrix);
+    }
+    else {
+      mesh.position.x += dir.x;
+      mesh.position.z += dir.z;
+    }
+
+
+    console.log("DESCARRILOU", dir);
+
+  }
 }
 
 function getAngle(position) {
