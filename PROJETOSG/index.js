@@ -1,18 +1,25 @@
 // THREEJS RELATED VARIABLES
-var scene, renderer, camera, dirLightHelper, controls;
+var scene, scene2, renderer, camera, dirLightHelper, controls;
 var windowWidth, windowHeight;
 var mouseX = 0,
   mouseY = 0;
 var path;
 var geometry;
-var mesh;
-var angle = 0;
+var mesh, mesh2;
+var angle = 0,
+  angle2 = 0;
 var position = 0;
+let position2 = 0;
+
 // direction vector for movement
 var direction = new THREE.Vector3(1, 0, 0);
 var up = new THREE.Vector3(0, 1, 0);
 var axis = new THREE.Vector3();
-var acc = 0
+var acc = 0;
+var direction2 = new THREE.Vector3(1, 0, 0);
+var up2 = new THREE.Vector3(0, 1, 0);
+var axis2 = new THREE.Vector3();
+var acc2 = 0;
 var views = [
   {
     left: 0,
@@ -23,10 +30,15 @@ var views = [
     eye: [0, 300, 1800],
     up: [0, 1, 0],
     fov: 30,
-    updateCamera: function (camera, scene, mouseX) {
-      camera.position.x += mouseX * 0.05;
-      camera.position.x = Math.max(Math.min(camera.position.x, 2000), -2000);
-      camera.lookAt(scene.position);
+    updateCamera: function(camera, mesh, mouseX) {
+      // camera TO object relative offset
+      var relativeOffset = new THREE.Vector3(0, 100, -450);
+      // updates (multiplies) the offset with the object ‘s global transformation matrix
+      var cameraOffset = relativeOffset.applyMatrix4(mesh.matrixWorld);
+      // updates the camera position with the new offset
+      camera.position.copy(cameraOffset);
+      // camera looks at the object’s position
+      camera.lookAt(mesh.position);
     }
   },
   {
@@ -38,10 +50,15 @@ var views = [
     eye: [0, 300, 1800],
     up: [0, 1, 0],
     fov: 30,
-    updateCamera: function (camera, scene, mouseX) {
-      camera.position.x += mouseX * 0.05;
-      camera.position.x = Math.max(Math.min(camera.position.x, 2000), -2000);
-      camera.lookAt(scene.position);
+    updateCamera: function(camera, mesh, mouseX) {
+      // camera TO object relative offset
+      var relativeOffset = new THREE.Vector3(0, 100, -450);
+      // updates (multiplies) the offset with the object ‘s global transformation matrix
+      var cameraOffset = relativeOffset.applyMatrix4(mesh.matrixWorld);
+      // updates the camera position with the new offset
+      camera.position.copy(cameraOffset);
+      // camera looks at the object’s position
+      camera.lookAt(mesh.position);
     }
   }
 ];
@@ -56,7 +73,8 @@ let n;
 let vel = 1;
 
 let keyboardState = {
-  up: false
+  up: false,
+  space: false
 };
 
 window.onload = function init() {
@@ -76,12 +94,20 @@ window.onload = function init() {
     if (evt.keyCode == 38) {
       keyboardState.up = true;
     }
+    if (evt.keyCode == 32) {
+      keyboardState.space = true;
+    }
   }
   document.addEventListener("keydown", onKeyDown, false);
 
   //keyup event
   function onKeyUp(evt) {
-    keyboardState.up = false;
+    if (evt.keyCode == 38) {
+      keyboardState.up = false;
+    }
+    if (evt.keyCode == 32) {
+      keyboardState.space = false;
+    }
   }
   document.addEventListener("keyup", onKeyUp, false);
 
@@ -102,7 +128,9 @@ function drawPath() {
     color: 0xffffff
   });
   var line = new THREE.Line(lineGeometry, lineMaterial);
+  var line2 = line.clone();
   scene.add(line);
+  scene2.add(line2);
 }
 
 //INIT THREE JS, SCREEN, SCENE, CAMERA AND MOUSE EVENTS
@@ -121,7 +149,7 @@ function createScene() {
   }
   // create an empty scene, that will hold all our elements such as objects, cameras and lights
   scene = new THREE.Scene();
-
+  scene2 = new THREE.Scene();
   // create a camera, which defines where we're looking at
   //var aspect = window.innerWidth / window.innerHeight;
   //camera = new THREE.PerspectiveCamera(100, aspect, 0.1, 200);
@@ -129,13 +157,6 @@ function createScene() {
 
   // camera.position.z = 120;
   // camera.position.y = 60;
-
-  // CONTROLS
-
-  controls = new THREE.OrbitControls(camera);
-  controls.addEventListener("change", function () {
-    renderer.render(scene, camera);
-  });
 
   // create a render and set the size
   renderer = new THREE.WebGLRenderer();
@@ -151,7 +172,7 @@ function createScene() {
   // listen to the screen: if the user resizes it we have to update the camera and the renderer size
   window.addEventListener("resize", updateSize, false);
 
-  //FLOOR
+  //FLOOR1
 
   let floor = new THREE.PlaneGeometry(170, 170);
   let floorMaterial = new THREE.MeshBasicMaterial({
@@ -160,7 +181,16 @@ function createScene() {
   });
   let f1 = new THREE.Mesh(floor, floorMaterial);
   f1.rotation.x = -Math.PI / 2;
+
+  //FLOOR2
+  let floorMaterial2 = new THREE.MeshBasicMaterial({
+    color: 0xffff00,
+    wireframe: false
+  });
+  let f2 = new THREE.Mesh(floor, floorMaterial2);
+  f2.rotation.x = -Math.PI / 2;
   scene.add(f1);
+  scene2.add(f2);
   // material
   var material = new THREE.MeshPhongMaterial({
     color: 0xff0000,
@@ -172,7 +202,8 @@ function createScene() {
   // mesh
   mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
-
+  mesh2 = new THREE.Mesh(geometry, material);
+  scene2.add(mesh2);
   // the path
   path = new THREE.Path();
   var arcRadius = 50;
@@ -189,41 +220,81 @@ function createScene() {
   // Start angle and point
   previousAngle = getAngle(position);
   previousPoint = path.getPointAt(position);
+  // Start angle and point
+  previousAngle2 = getAngle(position2);
+  previousPoint2 = path.getPointAt(position2);
 }
-let derail = false
+let derail = false;
+let derail2 = false;
 let derailPos;
+let derail2Pos;
+
 var angle;
+var angle2;
 let dir;
+let dir2;
+let fps = 0,
+  fps2 = 0;
+var savedMesh = undefined;
 function move() {
   position += acc;
-
-  if (keyboardState.up) {
+  position2 += acc2;
+  if (keyboardState.space) {
     acc += 0.0001;
   } else {
     acc -= 0.0001;
   }
+
+  if (keyboardState.up) {
+    acc2 += 0.0001;
+  } else {
+    acc2 -= 0.0001;
+  }
   if (acc < 0.0001) {
     acc = 0.0001;
-
+  }
+  if (acc2 < 0.0001) {
+    acc2 = 0.0001;
   }
 
-  if (acc >= 0.02) {//Maxima aceleração
+  if (acc >= 0.02) {
+    //Maxima aceleração
     acc = 0.019;
   }
-
+  if (acc2 >= 0.02) {
+    acc2 = 0.019;
+  }
+  //Onde ele dá volta
   if (position >= 1) {
     position = 0.001;
   }
-  //Crashing when position is between 0.09 and 0.39 or 0.59 and 0.89
+
+  if (position2 >= 1) {
+    position2 = 0.001;
+  }
+  //Crashing when position
   if (acc > 0.019) {
-    if (position > 0.152400000000001 && position < 0.3347999999999924) { //1ª curva
-      derail = true
-      derailPos = position
-    } else if (position > 0.6388999999999956 && position < 0.8412999999999415) {
-      derail = true
-      derailPos = position
+    if (position > 0.16 && position < 0.35) {
+      //1ª curva
+      derail = true;
+
+      derailPos = position;
+    } else if (position > 0.7 && position < 0.85) {
+      derail = true;
+      derailPos = position;
     }
   }
+  if (acc2 > 0.019) {
+    if (position2 > 0.16 && position2 < 0.35) {
+      //1ª curva
+      derail2 = true;
+      derail2Pos = position2;
+    } else if (position2 > 0.7 && position2 < 0.85) {
+      derail2 = true;
+      derail2Pos = position2;
+    }
+  }
+
   if (!derail) {
     // get the point at position
     var point = path.getPointAt(position);
@@ -240,15 +311,11 @@ function move() {
   } else {
     // get the point at position
     var point = path.getPointAt(derailPos);
-
-
     // mesh.position.x = point.x;
     // mesh.position.z = point.y;
     //var angle = getAngle(derailPos);
     // // set the quaternion
     // mesh.quaternion.setFromAxisAngle(up, angle);
-
-
 
     previousPoint = point;
     previousAngle = angle;
@@ -262,15 +329,63 @@ function move() {
       var normalMatrix = new THREE.Matrix4().extractRotation(mesh.matrixWorld);
       var normal = mesh.geometry.faces[10].normal;
       dir = normal.clone().applyMatrix4(normalMatrix);
-    }
-    else {
+    } else {
       mesh.position.x += dir.x;
       mesh.position.z += dir.z;
     }
 
+    fps++;
 
-    console.log("DESCARRILOU", dir);
+    if (fps == 66) {
+      acc = 0.0001;
+      position = 0.001;
+      derail = false;
+      fps = 0;
+    }
+  }
 
+  if (!derail2) {
+    //Second car movement
+    // get the point at position
+    var point2 = path.getPointAt(position2);
+    //console.log(position, "POSITION");
+
+    mesh2.position.x = point2.x;
+    mesh2.position.z = point2.y;
+    angle2 = getAngle(position2);
+    // set the quaternion
+    mesh2.quaternion.setFromAxisAngle(up2, angle2);
+
+    previousPoint2 = point2;
+    previousAngle2 = angle2;
+  } else {
+    //Segundo Carro
+
+    // get the point at position
+    var point2 = path.getPointAt(derail2Pos);
+
+    previousPoint2 = point2;
+    previousAngle2 = angle2;
+
+    if (dir2 == undefined) {
+      var normalMatrix2 = new THREE.Matrix4().extractRotation(
+        mesh2.matrixWorld
+      );
+      var normal2 = mesh2.geometry.faces[10].normal;
+      dir2 = normal2.clone().applyMatrix4(normalMatrix2);
+    } else {
+      mesh2.position.x += dir2.x;
+      mesh2.position.z += dir2.z;
+    }
+
+    fps2++;
+
+    if (fps2 == 66) {
+      acc2 = 0.0001;
+      position2 = 0.001;
+      derail2 = false;
+      fps2 = 0;
+    }
   }
 }
 
@@ -305,22 +420,35 @@ function updateSize() {
 
 function render() {
   updateSize();
-  for (var ii = 0; ii < views.length; ++ii) {
-    var view = views[ii];
-    var camera = view.camera;
-    view.updateCamera(camera, scene, mouseX, mouseY);
-    var left = Math.floor(windowWidth * view.left);
-    var bottom = Math.floor(windowHeight * view.bottom);
-    var width = Math.floor(windowWidth * view.width);
-    var height = Math.floor(windowHeight * view.height);
-    renderer.setViewport(left, bottom, width, height);
-    renderer.setScissor(left, bottom, width, height);
-    renderer.setScissorTest(true);
-    renderer.setClearColor(view.background);
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-    renderer.render(scene, camera); //Renderizar duas scenes diferentes
-  }
+
+  var view = views[0];
+  var camera = view.camera;
+  view.updateCamera(camera, mesh, mouseX, mouseY);
+  var left = Math.floor(windowWidth * view.left);
+  var bottom = Math.floor(windowHeight * view.bottom);
+  var width = Math.floor(windowWidth * view.width);
+  var height = Math.floor(windowHeight * view.height);
+  renderer.setViewport(left, bottom, width, height);
+  renderer.setScissor(left, bottom, width, height);
+  renderer.setScissorTest(true);
+  renderer.setClearColor(view.background);
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+  renderer.render(scene, camera); //Renderizar duas scenes diferentes
+  var view = views[1];
+  var camera = view.camera;
+  view.updateCamera(camera, mesh2, mouseX, mouseY);
+  var left = Math.floor(windowWidth * view.left);
+  var bottom = Math.floor(windowHeight * view.bottom);
+  var width = Math.floor(windowWidth * view.width);
+  var height = Math.floor(windowHeight * view.height);
+  renderer.setViewport(left, bottom, width, height);
+  renderer.setScissor(left, bottom, width, height);
+  renderer.setScissorTest(true);
+  renderer.setClearColor(view.background);
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+  renderer.render(scene2, camera);
 }
 
 function createLights() {
@@ -339,31 +467,6 @@ function createLights() {
 }
 
 function animate() {
-  /*  if (i == 628) {
-    i = 0;
-  }
-  // render
-
-  cube.position.x = points[i].x;
-  cube.position.z = points[i].z;
-
-  //loop reason
-  i = (i + 1) % (n + 1);
-
-  if (keyboardState.up) {
-    vel += 1;
-    i = (i + vel) % (n - vel);
-    if (vel > 6) {
-      vel = 6;
-    }
-    console.log(vel);
-  } else {
-    vel -= 1;
-    i = (i + vel) % (n + vel);
-    if (vel < 1) {
-      vel = 1;
-    }
-  } */
   move();
   render();
   requestAnimationFrame(animate);
