@@ -266,7 +266,8 @@ let dir;
 let dir2;
 let fps = 0,
   fps2 = 0;
-var savedMesh = undefined;
+let lap1 = 1,
+  lap2 = 1;
 function move() {
   position += acc;
   position2 += acc2;
@@ -297,10 +298,18 @@ function move() {
   }
   //Onde ele dá volta
   if (position >= 1) {
+    if (!derail) {
+      lap1++;
+      console.log(lap1);
+    }
     position = 0.001;
   }
 
   if (position2 >= 1) {
+    if (!derail2) {
+      lap2++;
+      console.log(lap2);
+    }
     position2 = 0.001;
   }
   //Crashing when position
