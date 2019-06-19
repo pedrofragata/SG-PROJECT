@@ -41,7 +41,7 @@ var views = [
     bottom: 0,
     width: 0.5,
     height: 1.0,
-    background: new THREE.Color(0.5, 0.5, 1),
+    background: new THREE.Color(0.5, 0.5, 0.7),
     eye: [0, 300, 1800],
     up: [0, 1, 0],
     fov: 30,
@@ -179,10 +179,10 @@ function createScene() {
   });
   var mtlLoader2 = new THREE.MTLLoader();
 
-  mtlLoader2.load("models/track.mtl", function(materials) {
-    materials.preload(); // load a material’s resource
+  mtlLoader2.load("models/track.mtl", function(materials2) {
+    materials2.preload(); // load a material’s resource
     var objLoader = new THREE.OBJLoader();
-    objLoader.setMaterials(materials);
+    objLoader.setMaterials(materials2);
     objLoader.load("models/track.obj", function(object) {
       // load a geometry resource
       mesh4 = object;
@@ -224,13 +224,16 @@ function createScene() {
     color: 0xff0000,
     shading: THREE.FlatShading
   });
-
+  var material2 = new THREE.MeshPhongMaterial({
+    color: 0xff0000,
+    shading: THREE.FlatShading
+  });
   // geometry
   geometry = new THREE.BoxGeometry(10, 10, 10);
   // mesh
   mesh = new THREE.Mesh(geometry, material);
   scene.add(mesh);
-  mesh2 = new THREE.Mesh(geometry, material);
+  mesh2 = new THREE.Mesh(geometry, material2);
   scene2.add(mesh2);
   // the path
   path = new THREE.Path();
@@ -481,8 +484,10 @@ function render() {
 
 function createLights() {
   var light = new THREE.HemisphereLight(0xaaaaaa, 0x000000, 0.9);
-  scene.add(light);
+  var light2 = new THREE.HemisphereLight(0xaaaaaa, 0x000000, 0.9);
 
+  scene.add(light);
+  scene2.add(light2);
   var directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
   directionalLight.position.set(100, 80, 50);
   directionalLight.shadow.camera.bottom = -500;
@@ -491,7 +496,16 @@ function createLights() {
   directionalLight.shadow.camera.right = 500;
   directionalLight.shadow.camera.far = 1000;
   directionalLight.castShadow = true;
+  var directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.9);
+  directionalLight2.position.set(100, 80, 50);
+  directionalLight2.shadow.camera.bottom = -500;
+  directionalLight2.shadow.camera.top = 500;
+  directionalLight2.shadow.camera.left = -500;
+  directionalLight2.shadow.camera.right = 500;
+  directionalLight2.shadow.camera.far = 1000;
+  directionalLight2.castShadow = true;
   scene.add(directionalLight);
+  scene2.add(directionalLight2);
 }
 
 function animate() {
