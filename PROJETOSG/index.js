@@ -30,15 +30,10 @@ var views = [
     eye: [0, 300, 1800],
     up: [0, 1, 0],
     fov: 30,
-    updateCamera: function(camera, mesh, mouseX) {
-      // camera TO object relative offset
-      var relativeOffset = new THREE.Vector3(0, 100, -450);
-      // updates (multiplies) the offset with the object ‘s global transformation matrix
-      var cameraOffset = relativeOffset.applyMatrix4(mesh.matrixWorld);
-      // updates the camera position with the new offset
-      camera.position.copy(cameraOffset);
-      // camera looks at the object’s position
-      camera.lookAt(mesh.position);
+    updateCamera: function(camera, scene, mouseX) {
+      camera.position.x += mouseX * 0.05;
+      camera.position.x = Math.max(Math.min(camera.position.x, 2000), -2000);
+      camera.lookAt(scene.position);
     }
   },
   {
@@ -50,15 +45,10 @@ var views = [
     eye: [0, 300, 1800],
     up: [0, 1, 0],
     fov: 30,
-    updateCamera: function(camera, mesh, mouseX) {
-      // camera TO object relative offset
-      var relativeOffset = new THREE.Vector3(0, 100, -450);
-      // updates (multiplies) the offset with the object ‘s global transformation matrix
-      var cameraOffset = relativeOffset.applyMatrix4(mesh.matrixWorld);
-      // updates the camera position with the new offset
-      camera.position.copy(cameraOffset);
-      // camera looks at the object’s position
-      camera.lookAt(mesh.position);
+    updateCamera: function(camera, scene, mouseX) {
+      camera.position.x += mouseX * 0.05;
+      camera.position.x = Math.max(Math.min(camera.position.x, 2000), -2000);
+      camera.lookAt(scene.position);
     }
   }
 ];
@@ -173,22 +163,60 @@ function createScene() {
   window.addEventListener("resize", updateSize, false);
 
   //FLOOR1
+  //LOADER
+  // instantiate a loader
+  var mtlLoader = new THREE.MTLLoader();
+  mtlLoader.load("models/track.mtl", function(materials) {
+    materials.preload(); // load a material’s resource
+    var objLoader = new THREE.OBJLoader();
+    objLoader.setMaterials(materials);
+    objLoader.load("models/track.obj", function(object) {
+      // load a geometry resource
+      mesh3 = object;
+      mesh3.position.y = -5;
+      scene.add(mesh3);
+    });
+  });
+  var mtlLoader2 = new THREE.MTLLoader();
 
-  let floor = new THREE.PlaneGeometry(170, 170);
+  mtlLoader2.load("models/track.mtl", function(materials) {
+    materials.preload(); // load a material’s resource
+    var objLoader = new THREE.OBJLoader();
+    objLoader.setMaterials(materials);
+    objLoader.load("models/track.obj", function(object) {
+      // load a geometry resource
+      mesh4 = object;
+      mesh4.position.y = -5;
+      scene2.add(mesh4);
+    });
+  });
+  //FLOOR
+  // let floorMaterial = new THREE.TextureLoader().load("models/grass.jpg");
+  let floor = new THREE.PlaneGeometry(1000, 700);
+  let grass = new THREE.TextureLoader().load("models/grass2.jpg");
+  grass.wrapS = THREE.RepeatWrapping;
+  grass.wrapT = THREE.RepeatWrapping;
+  grass.repeat.set(4, 4);
   let floorMaterial = new THREE.MeshBasicMaterial({
     color: 0xf09c67,
-    wireframe: false
+    wireframe: false,
+    map: grass
   });
+
   let f1 = new THREE.Mesh(floor, floorMaterial);
   f1.rotation.x = -Math.PI / 2;
 
   //FLOOR2
   let floorMaterial2 = new THREE.MeshBasicMaterial({
-    color: 0xffff00,
-    wireframe: false
+    color: 0xf09c67,
+    wireframe: false,
+    map: grass
   });
   let f2 = new THREE.Mesh(floor, floorMaterial2);
   f2.rotation.x = -Math.PI / 2;
+  f1.position.y = -5;
+  f2.position.y = -5;
+
   scene.add(f1);
   scene2.add(f2);
   // material
@@ -207,7 +235,7 @@ function createScene() {
   // the path
   path = new THREE.Path();
   var arcRadius = 50;
-  let A = 80;
+  let A = 400;
 
   for (let i = 0; i < 2 * Math.PI; i += 0.01) {
     path.lineTo(A * Math.sin(i), A * Math.sin(i) * Math.cos(i));
