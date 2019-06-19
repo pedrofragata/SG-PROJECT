@@ -152,29 +152,37 @@ function createScene() {
   window.addEventListener("resize", updateSize, false);
 
   //LOADER
-  var loader = new THREE.OBJLoader();
+  // instantiate a loader
+  var mtlLoader = new THREE.MTLLoader();
+  mtlLoader.load('models/track.mtl', function (materials) {
+    materials.preload(); // load a material’s resource
+    var objLoader = new THREE.OBJLoader();
+    objLoader.setMaterials(materials);
+    objLoader.load('models/track.obj', function (object) {// load a geometry resource
+      mesh3 = object;
+      mesh3.position.y = -5;
+      scene.add(mesh3);
+    });
+  });
 
-  loader.load(
-    // resource URL
-    "models/track.obj",
 
-    // onLoad callback
-    // Here the loaded data is assumed to be an object
-    function (obj) {
-      // Add the loaded object to the scene
-      scene.add(obj);
-    },
-  )
-
-    //FLOOR
-
-    let floor = new THREE.PlaneGeometry(170, 170);
+  //FLOOR
+  // let floorMaterial = new THREE.TextureLoader().load("models/grass.jpg");
+  let floor = new THREE.PlaneGeometry(1000, 700);
+  let grass = new THREE.TextureLoader().load("models/grass2.jpg")
+  grass.wrapS = THREE.RepeatWrapping;
+  grass.wrapT = THREE.RepeatWrapping;
+  grass.repeat.set(4, 4);
   let floorMaterial = new THREE.MeshBasicMaterial({
     color: 0xf09c67,
-    wireframe: false
+    wireframe: false,
+    map: grass
+
   });
+
   let f1 = new THREE.Mesh(floor, floorMaterial);
   f1.rotation.x = -Math.PI / 2;
+  f1.position.y = -3
   scene.add(f1);
   // material
   var material = new THREE.MeshPhongMaterial({
@@ -191,7 +199,7 @@ function createScene() {
   // the path
   path = new THREE.Path();
   var arcRadius = 50;
-  let A = 80;
+  let A = 400;
 
   for (let i = 0; i < 2 * Math.PI; i += 0.01) {
     path.lineTo(A * Math.sin(i), A * Math.sin(i) * Math.cos(i));
