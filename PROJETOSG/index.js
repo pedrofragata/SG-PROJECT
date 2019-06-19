@@ -151,9 +151,24 @@ function createScene() {
   // listen to the screen: if the user resizes it we have to update the camera and the renderer size
   window.addEventListener("resize", updateSize, false);
 
-  //FLOOR
+  //LOADER
+  var loader = new THREE.OBJLoader();
 
-  let floor = new THREE.PlaneGeometry(170, 170);
+  loader.load(
+    // resource URL
+    "models/track.obj",
+
+    // onLoad callback
+    // Here the loaded data is assumed to be an object
+    function (obj) {
+      // Add the loaded object to the scene
+      scene.add(obj);
+    },
+  )
+
+    //FLOOR
+
+    let floor = new THREE.PlaneGeometry(170, 170);
   let floorMaterial = new THREE.MeshBasicMaterial({
     color: 0xf09c67,
     wireframe: false
