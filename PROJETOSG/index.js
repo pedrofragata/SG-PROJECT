@@ -171,8 +171,9 @@ function createScene() {
     objLoaderCar.load("models/carSingle.obj", function(object) {
       // load a geometry resource
       car1 = object;
-      car1.scale.set(1.5,1.5,1.5)
-      scene.add(car1);
+      car1.scale.set(1.5, 1.5, 1.5);
+      car1.rotateY(-Math.PI / 2);
+      mesh.add(car1);
     });
   });
   //CAR 2
@@ -184,8 +185,9 @@ function createScene() {
     objLoaderCar2.load("models/car2.obj", function(object) {
       // load a geometry resource
       car2 = object;
-      car2.scale.set(0.4,0.4,0.4)
-      scene2.add(car2);
+      car2.scale.set(0.4, 0.4, 0.4);
+      car2.rotateY(-Math.PI / 2);
+      mesh2.add(car2);
     });
   });
   //FLOOR1
@@ -249,11 +251,13 @@ function createScene() {
   // material
   var material = new THREE.MeshPhongMaterial({
     color: 0xff0000,
-    shading: THREE.FlatShading
+    shading: THREE.FlatShading,
+    visible: false
   });
   var material2 = new THREE.MeshPhongMaterial({
     color: 0xff0000,
-    shading: THREE.FlatShading
+    shading: THREE.FlatShading,
+    visible: false
   });
   // geometry
   geometry = new THREE.BoxGeometry(10, 10, 10);
@@ -295,6 +299,7 @@ let fps = 0,
   fps2 = 0;
 let lap1 = 1,
   lap2 = 1;
+let backRotation, backRotation2;
 function move() {
   position += acc;
   position2 += acc2;
@@ -361,7 +366,6 @@ function move() {
       derail2Pos = position2;
     }
   }
-
   if (!derail) {
     // get the point at position
     var point = path.getPointAt(position);
@@ -372,7 +376,6 @@ function move() {
     angle = getAngle(position);
     // set the quaternion
     mesh.quaternion.setFromAxisAngle(up, angle);
-
     previousPoint = point;
     previousAngle = angle;
   } else {
@@ -396,9 +399,15 @@ function move() {
       var normalMatrix = new THREE.Matrix4().extractRotation(mesh.matrixWorld);
       var normal = mesh.geometry.faces[10].normal;
       dir = normal.clone().applyMatrix4(normalMatrix);
+
+      backRotation = mesh.children[0].rotation.y;
     } else {
       mesh.position.x += dir.x;
       mesh.position.z += dir.z;
+
+      if (backRotation != undefined) {
+        mesh.children[0].rotation.y = -backRotation;
+      }
     }
 
     fps++;
@@ -407,6 +416,8 @@ function move() {
       acc = 0.0001;
       position = 0.001;
       derail = false;
+      mesh.children[0].rotation.y = -Math.PI / 2;
+      backRotation = undefined;
       fps = 0;
     }
   }
@@ -440,9 +451,14 @@ function move() {
       );
       var normal2 = mesh2.geometry.faces[10].normal;
       dir2 = normal2.clone().applyMatrix4(normalMatrix2);
+      backRotation2 = mesh2.children[0].rotation.y;
     } else {
       mesh2.position.x += dir2.x;
       mesh2.position.z += dir2.z;
+
+      if (backRotation2 != undefined) {
+        mesh2.children[0].rotation.y = -backRotation2;
+      }
     }
 
     fps2++;
@@ -451,6 +467,8 @@ function move() {
       acc2 = 0.0001;
       position2 = 0.001;
       derail2 = false;
+      mesh2.children[0].rotation.y = -Math.PI / 2;
+      backRotation2 = undefined;
       fps2 = 0;
     }
   }
