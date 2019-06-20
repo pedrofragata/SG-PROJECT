@@ -162,7 +162,34 @@ function createScene() {
   // listen to the screen: if the user resizes it we have to update the camera and the renderer size
   window.addEventListener("resize", updateSize, false);
 
+  // CAR 1
+  var mtlLoaderCar = new THREE.MTLLoader();
+  mtlLoaderCar.load("models/carSingle.mtl", function(materials) {
+    materials.preload(); // load a material’s resource
+    var objLoaderCar = new THREE.OBJLoader();
+    objLoaderCar.setMaterials(materials);
+    objLoaderCar.load("models/carSingle.obj", function(object) {
+      // load a geometry resource
+      car1 = object;
+      car1.scale.set(1.5,1.5,1.5)
+      scene.add(car1);
+    });
+  });
+  //CAR 2
+  var mtlLoaderCar2 = new THREE.MTLLoader();
+  mtlLoaderCar2.load("models/car2.mtl", function(materials) {
+    materials.preload(); // load a material’s resource
+    var objLoaderCar2 = new THREE.OBJLoader();
+    objLoaderCar2.setMaterials(materials);
+    objLoaderCar2.load("models/car2.obj", function(object) {
+      // load a geometry resource
+      car2 = object;
+      car2.scale.set(0.4,0.4,0.4)
+      scene2.add(car2);
+    });
+  });
   //FLOOR1
+
   //LOADER
   // instantiate a loader
   var mtlLoader = new THREE.MTLLoader();
