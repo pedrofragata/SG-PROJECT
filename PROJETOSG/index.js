@@ -10,7 +10,16 @@ var angle = 0,
   angle2 = 0;
 var position = 0;
 let position2 = 0;
-
+var h1 = 0,
+  m1 = 0,
+  s1 = 0,
+  h2 = 0,
+  m2 = 0,
+  s2 = 0;
+var timer1 = document.createElement("canvas");
+var timer2 = document.createElement("canvas");
+var winner = null;
+var timer1Texture, timer2Texture;
 // direction vector for movement
 var direction = new THREE.Vector3(1, 0, 0);
 var up = new THREE.Vector3(0, 1, 0);
@@ -100,7 +109,23 @@ window.onload = function init() {
     }
   }
   document.addEventListener("keyup", onKeyUp, false);
-
+  drawTimers();
+  var timer1Geometry = new THREE.BoxGeometry(100, 30, 1);
+  timer1Texture = new THREE.Texture(timer1);
+  var timer1Material = new THREE.MeshBasicMaterial({
+    map: timer1Texture
+  });
+  var timer1Mesh = new THREE.Mesh(timer1Geometry, timer1Material);
+  timer1Mesh.position.set(0, 100, 100);
+  scene.add(timer1Mesh);
+  var timer2Geometry = new THREE.BoxGeometry(100, 30, 1);
+  timer2Texture = new THREE.Texture(timer2);
+  var timer2Material = new THREE.MeshBasicMaterial({
+    map: timer2Texture
+  });
+  var timer2Mesh = new THREE.Mesh(timer2Geometry, timer2Material);
+  timer2Mesh.position.set(0, 100, 100);
+  scene2.add(timer2Mesh);
   animate();
 };
 
@@ -248,6 +273,7 @@ function createScene() {
 
   scene.add(f1);
   scene2.add(f2);
+
   // material
   var material = new THREE.MeshPhongMaterial({
     color: 0xff0000,
@@ -286,6 +312,53 @@ function createScene() {
   previousAngle2 = getAngle(position2);
   previousPoint2 = path.getPointAt(position2);
 }
+
+function drawTimers() {
+  //Remove Previous Timers
+
+  //ADD Timers
+  timer1.width = 512;
+  timer1.height = 512;
+  var ctx = timer1.getContext("2d");
+  ctx.fillStyle = "white";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = "60px Arial";
+  ctx.fillText(`${h1}:${m1}:${s1}`, timer1.width / 2, timer1.height / 2);
+  timer2.width = 512;
+  timer2.height = 512;
+  ctx = timer2.getContext("2d");
+  ctx.fillStyle = "white";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = "60px Arial";
+  ctx.fillText(`${h2}:${m2}:${s2}`, timer2.width / 2, timer2.height / 2);
+}
+function add() {
+  s1++;
+  if (s1 >= 60) {
+    s1 = 0;
+    m1++;
+    if (m1 >= 60) {
+      m1 = 0;
+      h1++;
+    }
+  }
+  s2++;
+  if (s2 >= 60) {
+    s2 = 0;
+    m2++;
+    if (m2 >= 60) {
+      m2 = 0;
+      h2++;
+    }
+  }
+}
+
+function timer() {
+  t = setTimeout(add, 1000);
+}
+
 let derail = false;
 let derail2 = false;
 let derailPos;
@@ -563,7 +636,54 @@ function createLights() {
 }
 
 function animate() {
-  move();
-  render();
-  requestAnimationFrame(animate);
+  drawTimers();
+  timer1Texture.needsUpdate = true;
+  timer2Texture.needsUpdate = true;
+  if (lap1 < 20 && lap2 < 20) {
+    timer();
+  }
+  if (lap1 == 20) {
+    winner = "Red Car";
+  } else if (lap2 == 20) {
+    winner = "Blue Car";
+  }
+  if (winner == null) {
+    move();
+    render();
+    requestAnimationFrame(animate);
+  } else {
+    if (winner == "Red Car") {
+      var view = views[0];
+      var camera = view.camera;
+      view.updateCamera(camera, mesh, mouseX, mouseY);
+      var left = Math.floor(windowWidth * view.left);
+      var bottom = Math.floor(windowHeight * view.bottom);
+      var width = Math.floor(windowWidth * view.width);
+      var height = Math.floor(windowHeight * view.height);
+      renderer.setViewport(left, bottom, width, height);
+      renderer.setScissor(left, bottom, width, height);
+      renderer.setScissorTest(true);
+      renderer.setClearColor(view.background);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.render(scene, camera);
+      alert(`Blue Winner With Time: ${h1}:${m1}:${s1}`);
+    } else {
+      var view = views[1];
+      var camera = view.camera;
+      view.updateCamera(camera, mesh2, mouseX, mouseY);
+      var left = Math.floor(windowWidth * view.left);
+      var bottom = Math.floor(windowHeight * view.bottom);
+      var width = Math.floor(windowWidth * view.width);
+      var height = Math.floor(windowHeight * view.height);
+      renderer.setViewport(left, bottom, width, height);
+      renderer.setScissor(left, bottom, width, height);
+      renderer.setScissorTest(true);
+      renderer.setClearColor(view.background);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.render(scene2, camera);
+      alert(`Blue Winner With Time: ${h2}:${m2}:${s2}`);
+    }
+  }
 }
