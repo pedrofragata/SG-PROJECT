@@ -186,7 +186,51 @@ function createScene() {
 
   // listen to the screen: if the user resizes it we have to update the camera and the renderer size
   window.addEventListener("resize", updateSize, false);
+   //SKYBOX 1
+   
+   var skybox = new THREE.CubeGeometry(1200,1000,3600)
+   var cubeMaterials=
+   [
+     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/red_rt.png"), side: THREE.DoubleSide}),
+     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/red_lf.png"), side: THREE.DoubleSide}),
+     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/red_up.png"), side: THREE.DoubleSide}),
+     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/red_bk.png"), side: THREE.DoubleSide}),
+     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/hills_dn.png"), side: THREE.DoubleSide}),
+     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/red_ft.png"), side: THREE.DoubleSide})
+   ]
+   var cubeMaterial = new THREE.MeshFaceMaterial(cubeMaterials)
+   var sky = new THREE.Mesh(skybox,cubeMaterial)
+   sky.position.y = 80
+   console.log(sky.position, "lalal")
+   scene.add(sky)
 
+   //SKYBOX 2
+   var skybox2 = new THREE.CubeGeometry(1200,1000,3600)
+   var cubeMaterials2=
+   [
+     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/nightsky_rt.png"), side: THREE.DoubleSide}),
+     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/nightsky_lf.png"), side: THREE.DoubleSide}),
+     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/nightsky_up.png"), side: THREE.DoubleSide}),
+     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/nightsky_bk.png"), side: THREE.DoubleSide}),
+     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/nightsky_dn.png"), side: THREE.DoubleSide}),
+     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/nightsky_ft.png"), side: THREE.DoubleSide})
+   ]
+   var cubeMaterial2 = new THREE.MeshFaceMaterial(cubeMaterials2)
+   var sky2 = new THREE.Mesh(skybox2,cubeMaterial2)
+   sky2.position.z = 100
+   sky2.position.y = -20
+   scene2.add(sky2)
+
+  /* var skyBoxB = new THREE.CubeTextureLoader().load([
+     "images/lmcity_bkB.png",
+     "images/lmcity_dnB.png",
+     "images/lmcity_ftB.png",
+     "images/lmcity_lfB.png",
+     "images/lmcity_rtB.png",
+     "images/lmcity_upB.png"
+   ]);
+   scene.background = skyBoxB;
+*/
   // CAR 1
   var mtlLoaderCar = new THREE.MTLLoader();
   mtlLoaderCar.load("models/carSingle.mtl", function(materials) {
@@ -246,7 +290,7 @@ function createScene() {
   });
   //FLOOR
   // let floorMaterial = new THREE.TextureLoader().load("models/grass.jpg");
-  let floor = new THREE.PlaneGeometry(1000, 700);
+  let floor = new THREE.PlaneGeometry(1000, 1150);
   let grass = new THREE.TextureLoader().load("models/grass2.jpg");
   grass.wrapS = THREE.RepeatWrapping;
   grass.wrapT = THREE.RepeatWrapping;
@@ -259,6 +303,7 @@ function createScene() {
 
   let f1 = new THREE.Mesh(floor, floorMaterial);
   f1.rotation.x = -Math.PI / 2;
+  f1.position.z = 150
 
   //FLOOR2
   let floorMaterial2 = new THREE.MeshBasicMaterial({
@@ -270,6 +315,7 @@ function createScene() {
   f2.rotation.x = -Math.PI / 2;
   f1.position.y = -5;
   f2.position.y = -5;
+  f2.position.z = 150
 
   scene.add(f1);
   scene2.add(f2);
