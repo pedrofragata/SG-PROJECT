@@ -134,6 +134,7 @@ window.onload = function init() {
   var timer2Mesh = new THREE.Mesh(timer2Geometry, timer2Material);
   timer2Mesh.position.set(0, 100, 100);
   scene2.add(timer2Mesh);
+
   animate();
 };
 
