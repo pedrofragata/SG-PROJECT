@@ -110,6 +110,11 @@ window.onload = function init() {
     if (evt.keyCode == 32) {
       keyboardState.space = false;
     }
+    if (winner != null) {
+      if (evt.keyCode == 82) {
+        location.reload();
+      }
+    }
   }
   document.addEventListener("keyup", onKeyUp, false);
   drawTimers();
@@ -209,7 +214,7 @@ function createScene() {
     sound.setBuffer(buffer);
     sound.setLoop(true);
     sound.setVolume(0.5);
-    sound.play();
+    // sound.play();
   });
 
   //SKYBOX 1
