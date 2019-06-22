@@ -39,7 +39,7 @@ var views = [
     eye: [0, 300, 1800],
     up: [0, 1, 0],
     fov: 30,
-    updateCamera: function(camera, scene, mouseX) {
+    updateCamera: function (camera, scene, mouseX) {
       camera.position.x += mouseX * 0.05;
       camera.position.x = Math.max(Math.min(camera.position.x, 2000), -2000);
       camera.lookAt(scene.position);
@@ -54,7 +54,7 @@ var views = [
     eye: [0, 300, 1800],
     up: [0, 1, 0],
     fov: 30,
-    updateCamera: function(camera, scene, mouseX) {
+    updateCamera: function (camera, scene, mouseX) {
       camera.position.x += mouseX * 0.05;
       camera.position.x = Math.max(Math.min(camera.position.x, 2000), -2000);
       camera.lookAt(scene.position);
@@ -186,40 +186,65 @@ function createScene() {
 
   // listen to the screen: if the user resizes it we have to update the camera and the renderer size
   window.addEventListener("resize", updateSize, false);
-   //SKYBOX 1
-   
-   var skybox = new THREE.CubeGeometry(1200,1000,3600)
-   var cubeMaterials=
-   [
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/red_rt.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/red_lf.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/red_up.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/red_bk.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/hills_dn.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/red_ft.png"), side: THREE.DoubleSide})
-   ]
-   var cubeMaterial = new THREE.MeshFaceMaterial(cubeMaterials)
-   var sky = new THREE.Mesh(skybox,cubeMaterial)
-   sky.position.y = 80
-   console.log(sky.position, "lalal")
-   scene.add(sky)
 
-   //SKYBOX 2
-   var skybox2 = new THREE.CubeGeometry(1200,1000,3600)
-   var cubeMaterials2=
-   [
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/nightsky_rt.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/nightsky_lf.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/nightsky_up.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/nightsky_bk.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/nightsky_dn.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/nightsky_ft.png"), side: THREE.DoubleSide})
-   ]
-   var cubeMaterial2 = new THREE.MeshFaceMaterial(cubeMaterials2)
-   var sky2 = new THREE.Mesh(skybox2,cubeMaterial2)
-   sky2.position.z = 100
-   sky2.position.y = -20
-   scene2.add(sky2)
+
+  // BACKGROUND MUSIC
+
+  var audioArray = ['sounds/bgmusic.ogg', 'sounds/bgmusic2.ogg'];
+  var choice = Math.floor(Math.random() * audioArray.length);
+
+  console.log(choice, "CHOOOOOOOOOOOOOOOOOOOICE")
+
+
+  var listener = new THREE.AudioListener();
+  camera.add(listener);
+
+  // create a global audio source
+  var sound = new THREE.Audio(listener);
+
+  // load a sound and set it as the Audio object's buffer
+  var audioLoader = new THREE.AudioLoader();
+  audioLoader.load(audioArray[choice], function (buffer) {
+    sound.setBuffer(buffer);
+    sound.setLoop(true);
+    sound.setVolume(0.5);
+    sound.play();
+  });
+
+  //SKYBOX 1
+
+  var skybox = new THREE.CubeGeometry(1200, 1000, 3600)
+  var cubeMaterials =
+    [
+      new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("images/red_rt.png"), side: THREE.DoubleSide }),
+      new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("images/red_lf.png"), side: THREE.DoubleSide }),
+      new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("images/red_up.png"), side: THREE.DoubleSide }),
+      new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("images/red_bk.png"), side: THREE.DoubleSide }),
+      new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("images/hills_dn.png"), side: THREE.DoubleSide }),
+      new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("images/red_ft.png"), side: THREE.DoubleSide })
+    ]
+  var cubeMaterial = new THREE.MeshFaceMaterial(cubeMaterials)
+  var sky = new THREE.Mesh(skybox, cubeMaterial)
+  sky.position.y = 80
+  console.log(sky.position, "lalal")
+  scene.add(sky)
+
+  //SKYBOX 2
+  var skybox2 = new THREE.CubeGeometry(1200, 1000, 3600)
+  var cubeMaterials2 =
+    [
+      new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("images/nightsky_rt.png"), side: THREE.DoubleSide }),
+      new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("images/nightsky_lf.png"), side: THREE.DoubleSide }),
+      new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("images/nightsky_up.png"), side: THREE.DoubleSide }),
+      new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("images/nightsky_bk.png"), side: THREE.DoubleSide }),
+      new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("images/nightsky_dn.png"), side: THREE.DoubleSide }),
+      new THREE.MeshBasicMaterial({ map: new THREE.TextureLoader().load("images/nightsky_ft.png"), side: THREE.DoubleSide })
+    ]
+  var cubeMaterial2 = new THREE.MeshFaceMaterial(cubeMaterials2)
+  var sky2 = new THREE.Mesh(skybox2, cubeMaterial2)
+  sky2.position.z = 100
+  sky2.position.y = -20
+  scene2.add(sky2)
 
   /* var skyBoxB = new THREE.CubeTextureLoader().load([
      "images/lmcity_bkB.png",
@@ -233,11 +258,11 @@ function createScene() {
 */
   // CAR 1
   var mtlLoaderCar = new THREE.MTLLoader();
-  mtlLoaderCar.load("models/carSingle.mtl", function(materials) {
+  mtlLoaderCar.load("models/carSingle.mtl", function (materials) {
     materials.preload(); // load a material’s resource
     var objLoaderCar = new THREE.OBJLoader();
     objLoaderCar.setMaterials(materials);
-    objLoaderCar.load("models/carSingle.obj", function(object) {
+    objLoaderCar.load("models/carSingle.obj", function (object) {
       // load a geometry resource
       car1 = object;
       car1.scale.set(1.5, 1.5, 1.5);
@@ -247,11 +272,11 @@ function createScene() {
   });
   //CAR 2
   var mtlLoaderCar2 = new THREE.MTLLoader();
-  mtlLoaderCar2.load("models/car2.mtl", function(materials) {
+  mtlLoaderCar2.load("models/car2.mtl", function (materials) {
     materials.preload(); // load a material’s resource
     var objLoaderCar2 = new THREE.OBJLoader();
     objLoaderCar2.setMaterials(materials);
-    objLoaderCar2.load("models/car2.obj", function(object) {
+    objLoaderCar2.load("models/car2.obj", function (object) {
       // load a geometry resource
       car2 = object;
       car2.scale.set(0.4, 0.4, 0.4);
@@ -264,11 +289,11 @@ function createScene() {
   //LOADER
   // instantiate a loader
   var mtlLoader = new THREE.MTLLoader();
-  mtlLoader.load("models/track.mtl", function(materials) {
+  mtlLoader.load("models/track.mtl", function (materials) {
     materials.preload(); // load a material’s resource
     var objLoader = new THREE.OBJLoader();
     objLoader.setMaterials(materials);
-    objLoader.load("models/track.obj", function(object) {
+    objLoader.load("models/track.obj", function (object) {
       // load a geometry resource
       mesh3 = object;
       mesh3.position.y = -5;
@@ -277,11 +302,11 @@ function createScene() {
   });
   var mtlLoader2 = new THREE.MTLLoader();
 
-  mtlLoader2.load("models/track.mtl", function(materials2) {
+  mtlLoader2.load("models/track.mtl", function (materials2) {
     materials2.preload(); // load a material’s resource
     var objLoader = new THREE.OBJLoader();
     objLoader.setMaterials(materials2);
-    objLoader.load("models/track.obj", function(object) {
+    objLoader.load("models/track.obj", function (object) {
       // load a geometry resource
       mesh4 = object;
       mesh4.position.y = -5;
@@ -713,7 +738,7 @@ function animate() {
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.render(scene, camera);
-      alert(`Blue Winner With Time: ${h1}:${m1}:${s1}`);
+      alert(`RED won with Time: ${h1}:${m1}:${s1}`);
     } else {
       var view = views[1];
       var camera = view.camera;
@@ -729,7 +754,7 @@ function animate() {
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.render(scene2, camera);
-      alert(`Blue Winner With Time: ${h2}:${m2}:${s2}`);
+      alert(`BLUE WON with Time: ${h2}:${m2}:${s2}`);
     }
   }
 }
