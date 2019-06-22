@@ -189,6 +189,29 @@ function createScene() {
 
   // listen to the screen: if the user resizes it we have to update the camera and the renderer size
   window.addEventListener("resize", updateSize, false);
+
+  // BACKGROUND MUSIC
+
+  var audioArray = ["sounds/bgmusic.ogg", "sounds/bgmusic2.ogg"];
+  var choice = Math.floor(Math.random() * audioArray.length);
+
+  console.log(choice, "CHOOOOOOOOOOOOOOOOOOOICE");
+
+  var listener = new THREE.AudioListener();
+  camera.add(listener);
+
+  // create a global audio source
+  var sound = new THREE.Audio(listener);
+
+  // load a sound and set it as the Audio object's buffer
+  var audioLoader = new THREE.AudioLoader();
+  audioLoader.load(audioArray[choice], function(buffer) {
+    sound.setBuffer(buffer);
+    sound.setLoop(true);
+    sound.setVolume(0.5);
+    sound.play();
+  });
+
   //SKYBOX 1
 
   var skybox = new THREE.CubeGeometry(1200, 1000, 3600);
