@@ -1,8 +1,15 @@
 // THREEJS RELATED VARIABLES
-var scene, scene2, renderer, camera, dirLightHelper, controls;
+let playTexture = new THREE.TextureLoader().load("images/PLAY.png");
+let startTexture = new THREE.TextureLoader().load("images/StartMenu2.png");
+let helpTexture = new THREE.TextureLoader().load("images/help.png");
+let showHelp = false;
+var finalTexture = new THREE.TextureLoader().load("images/YouWin.jpg");
+var finalTexture2 = new THREE.TextureLoader().load("images/YouLose.png");
+var scene, scene2, startScene, renderer, camera, dirLightHelper, controls;
 var windowWidth, windowHeight;
 var mouseX = 0,
   mouseY = 0;
+var mouse;
 var path;
 var geometry;
 var mesh, mesh2;
@@ -19,9 +26,8 @@ var h1 = 0,
 var timer1 = document.createElement("canvas");
 var timer2 = document.createElement("canvas");
 var winner = null;
+var play = false;
 var timer1Texture, timer2Texture;
-var finalTexture = new THREE.TextureLoader().load("images/YouWin.jpg");
-var finalTexture2 = new THREE.TextureLoader().load("images/YouLose.png");
 
 // direction vector for movement
 var direction = new THREE.Vector3(1, 0, 0);
@@ -117,6 +123,7 @@ window.onload = function init() {
     }
   }
   document.addEventListener("keyup", onKeyUp, false);
+
   drawTimers();
   var timer1Geometry = new THREE.BoxGeometry(100, 30, 1);
   timer1Texture = new THREE.Texture(timer1);
@@ -149,7 +156,8 @@ function drawPath() {
   var lineGeometry = new THREE.Geometry();
   lineGeometry.vertices = vertices;
   var lineMaterial = new THREE.LineBasicMaterial({
-    color: 0xffffff
+    color: 0xffffff,
+    visible: false
   });
   var line = new THREE.Line(lineGeometry, lineMaterial);
   var line2 = line.clone();
@@ -698,35 +706,99 @@ function updateSize() {
 
 function render() {
   updateSize();
+  if (play) {
+    var view = views[0];
+    var camera = view.camera;
+    view.updateCamera(camera, mesh, mouseX, mouseY);
+    var left = Math.floor(windowWidth * view.left);
+    var bottom = Math.floor(windowHeight * view.bottom);
+    var width = Math.floor(windowWidth * view.width);
+    var height = Math.floor(windowHeight * view.height);
+    renderer.setViewport(left, bottom, width, height);
+    renderer.setScissor(left, bottom, width, height);
+    renderer.setScissorTest(true);
+    renderer.setClearColor(view.background);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    renderer.render(scene, camera); //Renderizar duas scenes diferentes
+    var view = views[1];
+    var camera = view.camera;
+    view.updateCamera(camera, mesh2, mouseX, mouseY);
+    var left = Math.floor(windowWidth * view.left);
+    var bottom = Math.floor(windowHeight * view.bottom);
+    var width = Math.floor(windowWidth * view.width);
+    var height = Math.floor(windowHeight * view.height);
+    renderer.setViewport(left, bottom, width, height);
+    renderer.setScissor(left, bottom, width, height);
+    renderer.setScissorTest(true);
+    renderer.setClearColor(view.background);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    renderer.render(scene2, camera);
+  } else {
+    startScene = new THREE.Scene();
 
-  var view = views[0];
-  var camera = view.camera;
-  view.updateCamera(camera, mesh, mouseX, mouseY);
-  var left = Math.floor(windowWidth * view.left);
-  var bottom = Math.floor(windowHeight * view.bottom);
-  var width = Math.floor(windowWidth * view.width);
-  var height = Math.floor(windowHeight * view.height);
-  renderer.setViewport(left, bottom, width, height);
-  renderer.setScissor(left, bottom, width, height);
-  renderer.setScissorTest(true);
-  renderer.setClearColor(view.background);
-  camera.aspect = width / height;
-  camera.updateProjectionMatrix();
-  renderer.render(scene, camera); //Renderizar duas scenes diferentes
-  var view = views[1];
-  var camera = view.camera;
-  view.updateCamera(camera, mesh2, mouseX, mouseY);
-  var left = Math.floor(windowWidth * view.left);
-  var bottom = Math.floor(windowHeight * view.bottom);
-  var width = Math.floor(windowWidth * view.width);
-  var height = Math.floor(windowHeight * view.height);
-  renderer.setViewport(left, bottom, width, height);
-  renderer.setScissor(left, bottom, width, height);
-  renderer.setScissorTest(true);
-  renderer.setClearColor(view.background);
-  camera.aspect = width / height;
-  camera.updateProjectionMatrix();
-  renderer.render(scene2, camera);
+    var startcamera = new THREE.PerspectiveCamera(
+      90,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+    startcamera.position.z = 50;
+
+    startScene.background = startTexture;
+    var buttonPlay = new THREE.Mesh(
+      new THREE.PlaneGeometry(30, 10),
+      new THREE.MeshBasicMaterial({ map: playTexture })
+    );
+    buttonPlay.position.set(4, -10, 0);
+    buttonPlay.name = "Play";
+    startScene.add(buttonPlay);
+    var helpPlay = new THREE.Mesh(
+      new THREE.PlaneGeometry(30, 10),
+      new THREE.MeshBasicMaterial({ map: helpTexture })
+    );
+    helpPlay.position.set(4, -25, 0);
+    helpPlay.name = "Help";
+    startScene.add(helpPlay);
+
+    //É este o plano para mudares
+    var helpPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(50, 65),
+      new THREE.MeshBasicMaterial({ color: 0xffffff, visible: showHelp })
+    );
+    startScene.add(helpPlane);
+    helpPlane.position.set(70, 0, 0);
+    renderer.render(startScene, startcamera);
+    document.addEventListener("click", function(event) {
+      mouse = new THREE.Vector2(
+        (event.clientX / window.innerWidth) * 2 - 1, //x
+        -(event.clientY / window.innerHeight) * 2 + 1
+      ); //y
+      var raycaster = new THREE.Raycaster();
+      // update the picking ray with the camera and mouse position
+      raycaster.setFromCamera(mouse, startcamera);
+      // calculate objects intersecting the picking ray
+      var intersects = raycaster.intersectObjects(startScene.children);
+      if (intersects.length > 0) {
+        if (intersects[0].object.name == "Play") {
+          play = true;
+          (position = 0),
+            (position2 = 0),
+            (h1 = 0),
+            (m1 = 0),
+            (s1 = 0),
+            (h2 = 0),
+            (m2 = 0),
+            (s2 = 0),
+            (lap1 = 1),
+            (lap2 = 1);
+        } else if (intersects[0].object.name == "Help") {
+          showHelp = !showHelp;
+        }
+      }
+    });
+  }
 }
 
 function createLights() {
