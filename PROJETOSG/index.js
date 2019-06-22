@@ -788,11 +788,12 @@ function animate() {
       scene.children.length = 0;
 
       var finalMesh2 = new THREE.Mesh(
-        new THREE.BoxGeometry(300, 500, 1),
+        new THREE.BoxGeometry(window.innerWidth / 2, window.innerHeight / 2, 1),
         new THREE.MeshBasicMaterial({ map: finalTexture })
       );
-      finalMesh2.position.y = 10;
       scene.add(finalMesh2);
+      camera.position.z = 4000;
+      camera.position.y = 600;
       renderer.render(scene, camera);
       var view = views[1];
       var camera = view.camera;
@@ -810,11 +811,12 @@ function animate() {
       scene2.children.length = 0;
 
       var finalMesh = new THREE.Mesh(
-        new THREE.BoxGeometry(300, 500, 1),
+        new THREE.BoxGeometry(window.innerWidth / 2, window.innerHeight / 2, 1),
         new THREE.MeshBasicMaterial({ map: finalTexture2 })
       );
-      finalMesh.position.y = 10;
       scene2.add(finalMesh);
+      camera.position.z = 4000;
+      camera.position.y = 600;
       renderer.render(scene2, camera);
       alert(`Red Winner With Time: ${h1}:${m1}:${s1}`);
     } else {
@@ -834,11 +836,13 @@ function animate() {
       scene2.children.length = 0;
 
       var finalMesh = new THREE.Mesh(
-        new THREE.BoxGeometry(300, 500, 1),
+        new THREE.BoxGeometry(window.innerWidth / 2, window.innerHeight / 2, 1),
         new THREE.MeshBasicMaterial({ map: finalTexture })
       );
-      finalMesh.position.y = 10;
+
       scene2.add(finalMesh);
+      camera.position.z = 4000;
+      camera.position.y = 600;
       renderer.render(scene2, camera);
       var view = views[0];
       var camera = view.camera;
@@ -856,11 +860,13 @@ function animate() {
       scene.children.length = 0;
 
       var finalMesh2 = new THREE.Mesh(
-        new THREE.BoxGeometry(300, 500, 1),
+        new THREE.BoxGeometry(window.innerWidth / 2, window.innerHeight / 2, 1),
         new THREE.MeshBasicMaterial({ map: finalTexture2 })
       );
-      finalMesh2.position.y = 10;
+
       scene.add(finalMesh2);
+      camera.position.z = 4000;
+      camera.position.y = 600;
       renderer.render(scene, camera);
       alert(`Blue Winner With Time: ${h2}:${m2}:${s2}`);
     }
