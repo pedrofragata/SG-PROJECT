@@ -20,6 +20,9 @@ var timer1 = document.createElement("canvas");
 var timer2 = document.createElement("canvas");
 var winner = null;
 var timer1Texture, timer2Texture;
+var finalTexture = new THREE.TextureLoader().load("images/YouWin.jpg");
+var finalTexture2 = new THREE.TextureLoader().load("images/YouLose.png");
+
 // direction vector for movement
 var direction = new THREE.Vector3(1, 0, 0);
 var up = new THREE.Vector3(0, 1, 0);
@@ -186,40 +189,74 @@ function createScene() {
 
   // listen to the screen: if the user resizes it we have to update the camera and the renderer size
   window.addEventListener("resize", updateSize, false);
-   //SKYBOX 1
-   
-   var skybox = new THREE.CubeGeometry(1200,1000,3600)
-   var cubeMaterials=
-   [
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/red_rt.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/red_lf.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/red_up.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/red_bk.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/hills_dn.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/red_ft.png"), side: THREE.DoubleSide})
-   ]
-   var cubeMaterial = new THREE.MeshFaceMaterial(cubeMaterials)
-   var sky = new THREE.Mesh(skybox,cubeMaterial)
-   sky.position.y = 80
-   console.log(sky.position, "lalal")
-   scene.add(sky)
+  //SKYBOX 1
 
-   //SKYBOX 2
-   var skybox2 = new THREE.CubeGeometry(1200,1000,3600)
-   var cubeMaterials2=
-   [
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/nightsky_rt.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/nightsky_lf.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/nightsky_up.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/nightsky_bk.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/nightsky_dn.png"), side: THREE.DoubleSide}),
-     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader( ).load("images/nightsky_ft.png"), side: THREE.DoubleSide})
-   ]
-   var cubeMaterial2 = new THREE.MeshFaceMaterial(cubeMaterials2)
-   var sky2 = new THREE.Mesh(skybox2,cubeMaterial2)
-   sky2.position.z = 100
-   sky2.position.y = -20
-   scene2.add(sky2)
+  var skybox = new THREE.CubeGeometry(1200, 1000, 3600);
+  var cubeMaterials = [
+    new THREE.MeshBasicMaterial({
+      map: new THREE.TextureLoader().load("images/red_rt.png"),
+      side: THREE.DoubleSide
+    }),
+    new THREE.MeshBasicMaterial({
+      map: new THREE.TextureLoader().load("images/red_lf.png"),
+      side: THREE.DoubleSide
+    }),
+    new THREE.MeshBasicMaterial({
+      map: new THREE.TextureLoader().load("images/red_up.png"),
+      side: THREE.DoubleSide
+    }),
+    new THREE.MeshBasicMaterial({
+      map: new THREE.TextureLoader().load("images/red_bk.png"),
+      side: THREE.DoubleSide
+    }),
+    new THREE.MeshBasicMaterial({
+      map: new THREE.TextureLoader().load("images/hills_dn.png"),
+      side: THREE.DoubleSide
+    }),
+    new THREE.MeshBasicMaterial({
+      map: new THREE.TextureLoader().load("images/red_ft.png"),
+      side: THREE.DoubleSide
+    })
+  ];
+  var cubeMaterial = new THREE.MeshFaceMaterial(cubeMaterials);
+  var sky = new THREE.Mesh(skybox, cubeMaterial);
+  sky.position.y = 80;
+  console.log(sky.position, "lalal");
+  scene.add(sky);
+
+  //SKYBOX 2
+  var skybox2 = new THREE.CubeGeometry(1200, 1000, 3600);
+  var cubeMaterials2 = [
+    new THREE.MeshBasicMaterial({
+      map: new THREE.TextureLoader().load("images/nightsky_rt.png"),
+      side: THREE.DoubleSide
+    }),
+    new THREE.MeshBasicMaterial({
+      map: new THREE.TextureLoader().load("images/nightsky_lf.png"),
+      side: THREE.DoubleSide
+    }),
+    new THREE.MeshBasicMaterial({
+      map: new THREE.TextureLoader().load("images/nightsky_up.png"),
+      side: THREE.DoubleSide
+    }),
+    new THREE.MeshBasicMaterial({
+      map: new THREE.TextureLoader().load("images/nightsky_bk.png"),
+      side: THREE.DoubleSide
+    }),
+    new THREE.MeshBasicMaterial({
+      map: new THREE.TextureLoader().load("images/nightsky_dn.png"),
+      side: THREE.DoubleSide
+    }),
+    new THREE.MeshBasicMaterial({
+      map: new THREE.TextureLoader().load("images/nightsky_ft.png"),
+      side: THREE.DoubleSide
+    })
+  ];
+  var cubeMaterial2 = new THREE.MeshFaceMaterial(cubeMaterials2);
+  var sky2 = new THREE.Mesh(skybox2, cubeMaterial2);
+  sky2.position.z = 100;
+  sky2.position.y = -20;
+  scene2.add(sky2);
 
   /* var skyBoxB = new THREE.CubeTextureLoader().load([
      "images/lmcity_bkB.png",
@@ -303,7 +340,7 @@ function createScene() {
 
   let f1 = new THREE.Mesh(floor, floorMaterial);
   f1.rotation.x = -Math.PI / 2;
-  f1.position.z = 150
+  f1.position.z = 150;
 
   //FLOOR2
   let floorMaterial2 = new THREE.MeshBasicMaterial({
@@ -315,7 +352,7 @@ function createScene() {
   f2.rotation.x = -Math.PI / 2;
   f1.position.y = -5;
   f2.position.y = -5;
-  f2.position.z = 150
+  f2.position.z = 150;
 
   scene.add(f1);
   scene2.add(f2);
@@ -370,7 +407,11 @@ function drawTimers() {
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.font = "60px Arial";
-  ctx.fillText(`${h1}:${m1}:${s1}`, timer1.width / 2, timer1.height / 2);
+  ctx.fillText(
+    `${h1}:${m1}:${s1} Laps:${lap1}/20`,
+    timer1.width / 2,
+    timer1.height / 2
+  );
   timer2.width = 512;
   timer2.height = 512;
   ctx = timer2.getContext("2d");
@@ -378,7 +419,11 @@ function drawTimers() {
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.font = "60px Arial";
-  ctx.fillText(`${h2}:${m2}:${s2}`, timer2.width / 2, timer2.height / 2);
+  ctx.fillText(
+    `${h2}:${m2}:${s2} Laps:${lap2}/20`,
+    timer2.width / 2,
+    timer2.height / 2
+  );
 }
 function add() {
   s1++;
@@ -701,7 +746,7 @@ function animate() {
     if (winner == "Red Car") {
       var view = views[0];
       var camera = view.camera;
-      view.updateCamera(camera, mesh, mouseX, mouseY);
+      view.updateCamera(camera, scene, mouseX, mouseY);
       var left = Math.floor(windowWidth * view.left);
       var bottom = Math.floor(windowHeight * view.bottom);
       var width = Math.floor(windowWidth * view.width);
@@ -712,12 +757,42 @@ function animate() {
       renderer.setClearColor(view.background);
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
+      scene.children.length = 0;
+
+      var finalMesh2 = new THREE.Mesh(
+        new THREE.BoxGeometry(300, 500, 1),
+        new THREE.MeshBasicMaterial({ map: finalTexture })
+      );
+      finalMesh2.position.y = 10;
+      scene.add(finalMesh2);
       renderer.render(scene, camera);
-      alert(`Blue Winner With Time: ${h1}:${m1}:${s1}`);
+      var view = views[1];
+      var camera = view.camera;
+      view.updateCamera(camera, scene2, mouseX, mouseY);
+      var left = Math.floor(windowWidth * view.left);
+      var bottom = Math.floor(windowHeight * view.bottom);
+      var width = Math.floor(windowWidth * view.width);
+      var height = Math.floor(windowHeight * view.height);
+      renderer.setViewport(left, bottom, width, height);
+      renderer.setScissor(left, bottom, width, height);
+      renderer.setScissorTest(true);
+      renderer.setClearColor(view.background);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      scene2.children.length = 0;
+
+      var finalMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(300, 500, 1),
+        new THREE.MeshBasicMaterial({ map: finalTexture2 })
+      );
+      finalMesh.position.y = 10;
+      scene2.add(finalMesh);
+      renderer.render(scene2, camera);
+      alert(`Red Winner With Time: ${h1}:${m1}:${s1}`);
     } else {
       var view = views[1];
       var camera = view.camera;
-      view.updateCamera(camera, mesh2, mouseX, mouseY);
+      view.updateCamera(camera, scene2, mouseX, mouseY);
       var left = Math.floor(windowWidth * view.left);
       var bottom = Math.floor(windowHeight * view.bottom);
       var width = Math.floor(windowWidth * view.width);
@@ -728,7 +803,37 @@ function animate() {
       renderer.setClearColor(view.background);
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
+      scene2.children.length = 0;
+
+      var finalMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(300, 500, 1),
+        new THREE.MeshBasicMaterial({ map: finalTexture })
+      );
+      finalMesh.position.y = 10;
+      scene2.add(finalMesh);
       renderer.render(scene2, camera);
+      var view = views[0];
+      var camera = view.camera;
+      view.updateCamera(camera, scene, mouseX, mouseY);
+      var left = Math.floor(windowWidth * view.left);
+      var bottom = Math.floor(windowHeight * view.bottom);
+      var width = Math.floor(windowWidth * view.width);
+      var height = Math.floor(windowHeight * view.height);
+      renderer.setViewport(left, bottom, width, height);
+      renderer.setScissor(left, bottom, width, height);
+      renderer.setScissorTest(true);
+      renderer.setClearColor(view.background);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      scene.children.length = 0;
+
+      var finalMesh2 = new THREE.Mesh(
+        new THREE.BoxGeometry(300, 500, 1),
+        new THREE.MeshBasicMaterial({ map: finalTexture2 })
+      );
+      finalMesh2.position.y = 10;
+      scene.add(finalMesh2);
+      renderer.render(scene, camera);
       alert(`Blue Winner With Time: ${h2}:${m2}:${s2}`);
     }
   }
