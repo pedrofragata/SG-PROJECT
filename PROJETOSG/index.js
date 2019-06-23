@@ -695,7 +695,7 @@ function getAngle(position) {
   var tangent = path.getTangent(position).normalize();
 
   // change tangent to 3D
-  angle = -Math.atan(tangent.x / tangent.y);
+  angle = -Math.atan2(tangent.x , tangent.y);
 
   return -angle;
 }
