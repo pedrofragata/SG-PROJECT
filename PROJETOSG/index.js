@@ -2,15 +2,15 @@
 let playTexture = new THREE.TextureLoader().load("images/PLAY.png");
 let startTexture = new THREE.TextureLoader().load("images/StartMenu2.png");
 let helpTexture = new THREE.TextureLoader().load("images/help.png");
-let controlsTexture = new THREE.TextureLoader().load("images/CONTROLS.png")
+let controlsTexture = new THREE.TextureLoader().load("images/CONTROLS.png");
 let showHelp = false;
 var finalTexture = new THREE.TextureLoader().load("images/YouWin.jpg");
 var finalTexture2 = new THREE.TextureLoader().load("images/YouLose.png");
 var scene, scene2, startScene, renderer, camera, dirLightHelper, controls;
 var windowWidth, windowHeight;
-let playMusic =true
-let isPlaying = true
-let sound
+let playMusic = true;
+let isPlaying = true;
+let sound;
 var mouseX = 0,
   mouseY = 0;
 var mouse;
@@ -109,15 +109,13 @@ window.onload = function init() {
     if (evt.keyCode == 32) {
       keyboardState.space = true;
     }
-    if (evt.keyCode == 77 ) {
-      if (isPlaying)
-      {
-        sound.pause()
-        isPlaying = false
-      }
-      else {
-        sound.play()
-        isPlaying = true
+    if (evt.keyCode == 77) {
+      if (isPlaying) {
+        sound.pause();
+        isPlaying = false;
+      } else {
+        sound.play();
+        isPlaying = true;
       }
     }
   }
@@ -221,7 +219,11 @@ function createScene() {
 
   // BACKGROUND MUSIC
 
-  var audioArray = ["sounds/bgmusic.ogg", "sounds/bgmusic2.ogg" ,"sounds/bgmusic3.ogg" ];
+  var audioArray = [
+    "sounds/bgmusic.ogg",
+    "sounds/bgmusic2.ogg",
+    "sounds/bgmusic3.ogg"
+  ];
   var choice = Math.floor(Math.random() * audioArray.length);
 
   console.log(choice, "CHOICE");
@@ -238,7 +240,6 @@ function createScene() {
     sound.setBuffer(buffer);
     sound.setLoop(true);
     sound.setVolume(0.5);
-    
   });
 
   //SKYBOX 1
@@ -615,15 +616,9 @@ function move() {
       var normalMatrix = new THREE.Matrix4().extractRotation(mesh.matrixWorld);
       var normal = mesh.geometry.faces[10].normal;
       dir = normal.clone().applyMatrix4(normalMatrix);
-
-      backRotation = mesh.children[0].rotation.y;
     } else {
-      mesh.position.x += dir.x;
-      mesh.position.z += dir.z;
-
-      if (backRotation != undefined) {
-        mesh.children[0].rotation.y = -backRotation;
-      }
+      mesh.position.x -= dir.x;
+      mesh.position.z -= dir.z;
     }
 
     fps++;
@@ -632,8 +627,7 @@ function move() {
       acc = 0.0001;
       position = 0.001;
       derail = false;
-      mesh.children[0].rotation.y = -Math.PI / 2;
-      backRotation = undefined;
+
       fps = 0;
     }
   }
@@ -667,14 +661,9 @@ function move() {
       );
       var normal2 = mesh2.geometry.faces[10].normal;
       dir2 = normal2.clone().applyMatrix4(normalMatrix2);
-      backRotation2 = mesh2.children[0].rotation.y;
     } else {
-      mesh2.position.x += dir2.x;
-      mesh2.position.z += dir2.z;
-
-      if (backRotation2 != undefined) {
-        mesh2.children[0].rotation.y = -backRotation2;
-      }
+      mesh2.position.x -= dir2.x;
+      mesh2.position.z -= dir2.z;
     }
 
     fps2++;
@@ -683,8 +672,8 @@ function move() {
       acc2 = 0.0001;
       position2 = 0.001;
       derail2 = false;
-      mesh2.children[0].rotation.y = -Math.PI / 2;
-      backRotation2 = undefined;
+      //mesh2.children[0].rotation.y = -Math.PI / 2;
+      // backRotation2 = undefined;
       fps2 = 0;
     }
   }
@@ -695,7 +684,7 @@ function getAngle(position) {
   var tangent = path.getTangent(position).normalize();
 
   // change tangent to 3D
-  angle = -Math.atan2(tangent.x , tangent.y);
+  angle = -Math.atan2(tangent.x, tangent.y);
 
   return -angle;
 }
@@ -721,13 +710,12 @@ function updateSize() {
 
 function render() {
   updateSize();
-  
+
   if (play) {
-    if (playMusic)
-    {
+    if (playMusic) {
       sound.play();
-      playMusic = false
-    } 
+      playMusic = false;
+    }
     var view = views[0];
     var camera = view.camera;
     view.updateCamera(camera, mesh, mouseX, mouseY);
