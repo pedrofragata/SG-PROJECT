@@ -2,11 +2,15 @@
 let playTexture = new THREE.TextureLoader().load("images/PLAY.png");
 let startTexture = new THREE.TextureLoader().load("images/StartMenu2.png");
 let helpTexture = new THREE.TextureLoader().load("images/help.png");
+let controlsTexture = new THREE.TextureLoader().load("images/CONTROLS.png")
 let showHelp = false;
 var finalTexture = new THREE.TextureLoader().load("images/YouWin.jpg");
 var finalTexture2 = new THREE.TextureLoader().load("images/YouLose.png");
 var scene, scene2, startScene, renderer, camera, dirLightHelper, controls;
 var windowWidth, windowHeight;
+let playMusic =true
+let isPlaying = true
+let sound
 var mouseX = 0,
   mouseY = 0;
 var mouse;
@@ -104,6 +108,17 @@ window.onload = function init() {
     }
     if (evt.keyCode == 32) {
       keyboardState.space = true;
+    }
+    if (evt.keyCode == 77 ) {
+      if (isPlaying)
+      {
+        sound.pause()
+        isPlaying = false
+      }
+      else {
+        sound.play()
+        isPlaying = true
+      }
     }
   }
   document.addEventListener("keydown", onKeyDown, false);
@@ -206,16 +221,16 @@ function createScene() {
 
   // BACKGROUND MUSIC
 
-  var audioArray = ["sounds/bgmusic.ogg", "sounds/bgmusic2.ogg"];
+  var audioArray = ["sounds/bgmusic.ogg", "sounds/bgmusic2.ogg" ,"sounds/bgmusic3.ogg" ];
   var choice = Math.floor(Math.random() * audioArray.length);
 
-  console.log(choice, "CHOOOOOOOOOOOOOOOOOOOICE");
+  console.log(choice, "CHOICE");
 
   var listener = new THREE.AudioListener();
   camera.add(listener);
 
   // create a global audio source
-  var sound = new THREE.Audio(listener);
+  sound = new THREE.Audio(listener);
 
   // load a sound and set it as the Audio object's buffer
   var audioLoader = new THREE.AudioLoader();
@@ -223,7 +238,7 @@ function createScene() {
     sound.setBuffer(buffer);
     sound.setLoop(true);
     sound.setVolume(0.5);
-    // sound.play();
+    
   });
 
   //SKYBOX 1
@@ -706,7 +721,13 @@ function updateSize() {
 
 function render() {
   updateSize();
+  
   if (play) {
+    if (playMusic)
+    {
+      sound.play();
+      playMusic = false
+    } 
     var view = views[0];
     var camera = view.camera;
     view.updateCamera(camera, mesh, mouseX, mouseY);
@@ -762,10 +783,9 @@ function render() {
     helpPlay.name = "Help";
     startScene.add(helpPlay);
 
-    //É este o plano para mudares
     var helpPlane = new THREE.Mesh(
       new THREE.PlaneGeometry(50, 65),
-      new THREE.MeshBasicMaterial({ color: 0xffffff, visible: showHelp })
+      new THREE.MeshBasicMaterial({ map: controlsTexture, visible: showHelp })
     );
     startScene.add(helpPlane);
     helpPlane.position.set(70, 0, 0);
