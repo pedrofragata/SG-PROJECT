@@ -96,8 +96,7 @@ window.onload = function init() {
   // add the lights
   createLights();
   // add the objects
-  //createCar();
-  //createPath();
+
 
   //KEY EVENTS
 
@@ -196,12 +195,7 @@ function createScene() {
   scene = new THREE.Scene();
   scene2 = new THREE.Scene();
   // create a camera, which defines where we're looking at
-  //var aspect = window.innerWidth / window.innerHeight;
-  //camera = new THREE.PerspectiveCamera(100, aspect, 0.1, 200);
-  // position the camera
 
-  // camera.position.z = 120;
-  // camera.position.y = 60;
 
   // create a render and set the size
   renderer = new THREE.WebGLRenderer();
@@ -311,16 +305,6 @@ function createScene() {
   sky2.position.y = -20;
   scene2.add(sky2);
 
-  /* var skyBoxB = new THREE.CubeTextureLoader().load([
-     "images/lmcity_bkB.png",
-     "images/lmcity_dnB.png",
-     "images/lmcity_ftB.png",
-     "images/lmcity_lfB.png",
-     "images/lmcity_rtB.png",
-     "images/lmcity_upB.png"
-   ]);
-   scene.background = skyBoxB;
-*/
   // CAR 1
   var mtlLoaderCar = new THREE.MTLLoader();
   mtlLoaderCar.load("models/carSingle.mtl", function(materials) {
@@ -379,7 +363,7 @@ function createScene() {
     });
   });
   //FLOOR
-  // let floorMaterial = new THREE.TextureLoader().load("models/grass.jpg");
+  
   let floor = new THREE.PlaneGeometry(1000, 1150);
   let grass = new THREE.TextureLoader().load("models/grass2.jpg");
   grass.wrapS = THREE.RepeatWrapping;
@@ -586,7 +570,7 @@ function move() {
   if (!derail) {
     // get the point at position
     var point = path.getPointAt(position);
-    //console.log(position, "POSITION");
+    
 
     mesh.position.x = point.x;
     mesh.position.z = point.y;
@@ -598,19 +582,10 @@ function move() {
   } else {
     // get the point at position
     var point = path.getPointAt(derailPos);
-    // mesh.position.x = point.x;
-    // mesh.position.z = point.y;
-    //var angle = getAngle(derailPos);
-    // // set the quaternion
-    // mesh.quaternion.setFromAxisAngle(up, angle);
 
     previousPoint = point;
     previousAngle = angle;
 
-    // console.log("DESCARRILOU", point, angle, Math.cos(angle), Math.sin(angle));
-
-    // mesh.position.x += 2 * Math.cos(angle);
-    // mesh.position.z += 2 * Math.sin(angle);
 
     if (dir == undefined) {
       var normalMatrix = new THREE.Matrix4().extractRotation(mesh.matrixWorld);
@@ -636,7 +611,7 @@ function move() {
     //Second car movement
     // get the point at position
     var point2 = path.getPointAt(position2);
-    //console.log(position, "POSITION");
+
 
     mesh2.position.x = point2.x;
     mesh2.position.z = point2.y;
@@ -672,8 +647,6 @@ function move() {
       acc2 = 0.0001;
       position2 = 0.001;
       derail2 = false;
-      //mesh2.children[0].rotation.y = -Math.PI / 2;
-      // backRotation2 = undefined;
       fps2 = 0;
     }
   }
@@ -688,14 +661,7 @@ function getAngle(position) {
 
   return -angle;
 }
-/* function handleWindowResize() {
-  // update height and width of the renderer and the camera
-  var HEIGHT = window.innerHeight;
-  var WIDTH = window.innerWidth;
-  //renderer.setSize(WIDTH, HEIGHT);
-  //camera.aspect = WIDTH / HEIGHT;
-  //camera.updateProjectionMatrix();
-} */
+
 function onDocumentMouseMove(event) {
   mouseX = event.clientX - windowWidth / 2;
   mouseY = event.clientY - windowHeight / 2;
